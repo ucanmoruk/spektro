@@ -18,8 +18,8 @@ export default function Navbar() {
     },
     { label: "Hizmetlerimiz", href: "/hizmetlerimiz" },
     { label: "Ürünlerimiz", href: "#" },
-    { label: "Market", href: "#" },
-    { label: "Haberler", href: "#" },
+    { label: "Market", href: "/market" },
+    { label: "Bilgi Merkezi", href: "#" },
     { label: "İletişim", href: "/iletisim" },
   ];
 
@@ -59,7 +59,7 @@ export default function Navbar() {
           )}
         </div>
         <button className="hidden rounded-full bg-slate-900 px-6 py-3 text-sm font-medium text-white transition-all duration-300 hover:-translate-y-0.5 hover:bg-slate-700 md:inline-flex">
-          Birlikte Çalışalım
+          Giriş Yap
         </button>
         <button
           aria-label="Menüyü aç"
