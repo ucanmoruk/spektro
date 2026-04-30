@@ -30,7 +30,7 @@ import {
   TrendingUp,
   Wrench,
 } from "lucide-react";
-import { animate, motion, useMotionValue, useSpring, useTransform } from "framer-motion";
+import { motion, useMotionValue, useSpring } from "framer-motion";
 import { Fragment, useEffect, useRef, useState } from "react";
 
 function MagneticCta({ primary = false, label, onClick }: { primary?: boolean; label: string; onClick?: () => void }) {
@@ -103,18 +103,22 @@ function Counter({
   /** Türkçe binlik ayırıcı (örn. 10.000) */
   formatLocale?: boolean;
 }) {
-  const mv = useMotionValue(0);
-  const rounded = useTransform(mv, (v) => Math.round(v));
   const [value, setValue] = useState(0);
 
   useEffect(() => {
-    const controls = animate(mv, to, { duration: 1.8, ease: "easeOut" });
-    const unsub = rounded.on("change", (v) => setValue(v));
-    return () => {
-      controls.stop();
-      unsub();
+    const durationMs = 1800;
+    const start = performance.now();
+    let raf = 0;
+    const easeOut = (t: number) => 1 - (1 - t) ** 3;
+    const tick = (now: number) => {
+      const elapsed = now - start;
+      const t = Math.min(elapsed / durationMs, 1);
+      setValue(Math.round(to * easeOut(t)));
+      if (t < 1) raf = requestAnimationFrame(tick);
     };
-  }, [mv, rounded, to]);
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [to]);
 
   const num = formatLocale ? value.toLocaleString("tr-TR") : value;
 
