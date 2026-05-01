@@ -57,10 +57,11 @@ function MagneticCta({ primary = false, label, onClick }: { primary?: boolean; l
   return (
     <motion.button
       ref={ref}
+      type="button"
       style={{ x: sx, y: sy }}
       onMouseMove={onMove}
       onMouseLeave={onLeave}
-      onClick={onClick}
+      onClick={() => onClick?.()}
       whileTap={{ scale: 0.98 }}
       whileHover="hover"
       className={
@@ -912,7 +913,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="border-t border-slate-100 bg-white py-20 md:py-24">
+      <section id="bilgi-merkezi" className="border-t border-slate-100 bg-white py-20 md:py-24">
         <div className="mx-auto w-full max-w-7xl px-6 md:px-10">
           <div className="mx-auto max-w-4xl text-center">
             <p className="text-sm font-semibold uppercase tracking-[0.12em] text-spektro-blue">Spektrotek Bilgi Merkezi</p>
@@ -926,7 +927,6 @@ export default function Home() {
                 description:
                   "Tağşiş tespiti için kromatografik metodu kısaltın; tekrarlanabilir pik alanı ve raporlanabilir çıktılarla kalite kontrolü güçlendirin.",
                 action: "PDF İndir",
-                href: "#",
                 image:
                   "https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=1200&q=85",
                 imageAlt: "Zeytin ve zeytinyağı",
@@ -937,7 +937,6 @@ export default function Home() {
                 description:
                   "Mixed-mode seçicilik ile peptit karakterizasyonunda çözünürlük ve analiz süresi optimizasyonuna dair teknik özet ve karşılaştırmalı veriler.",
                 action: "İncele",
-                href: "#",
                 image: "https://sielc.com/wp-content/uploads/2022/10/Primesep-A.webp",
                 imageAlt: "SIELC Primesep mixed-mode HPLC kolonu",
               },
@@ -947,7 +946,6 @@ export default function Home() {
                 description:
                   "Operatör bağımlılığını azaltan otomatik hat kurulumu, izlenebilir iş akışı ve doğrulama uyumu ile kesintisiz üretim analitiği.",
                 action: "Oku",
-                href: "#",
                 image: "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=1200&q=85",
                 imageAlt: "Laboratuvar otomasyonu ve analiz",
               },
@@ -977,13 +975,14 @@ export default function Home() {
                     priority={index === 0}
                   />
                 </div>
-                <a
-                  href={doc.href}
-                  className="relative mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-spektro-blue transition hover:text-blue-800"
+                <button
+                  type="button"
+                  className="relative mt-5 inline-flex cursor-default items-center gap-1.5 text-left text-sm font-semibold text-spektro-blue opacity-80 transition hover:opacity-100"
+                  aria-label={`${doc.action} — yakında`}
                 >
                   {doc.action}
-                  <ArrowUpRight className="h-4 w-4" aria-hidden />
-                </a>
+                  <ArrowUpRight className="h-4 w-4 shrink-0" aria-hidden />
+                </button>
               </motion.article>
             ))}
           </div>

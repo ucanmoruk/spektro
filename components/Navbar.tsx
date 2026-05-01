@@ -1,10 +1,32 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
-import { Menu } from "lucide-react";
+import { ChevronDown, Menu } from "lucide-react";
+
+type NavLink = { label: string; href: string };
+type MegaColumn = { title: string; links: NavLink[] };
+type NavItem = {
+  label: string;
+  href: string;
+  children?: NavLink[];
+  megaColumns?: MegaColumn[];
+};
+
+function MegaMenuLink({ link }: { link: NavLink }) {
+  if (link.href === "#") {
+    return (
+      <span className="block cursor-not-allowed rounded-lg px-2 py-2 text-sm font-medium text-slate-400">{link.label}</span>
+    );
+  }
+  return (
+    <Link href={link.href} className="block rounded-lg px-2 py-2 text-sm font-medium text-slate-700 transition hover:bg-white hover:text-slate-900">
+      {link.label}
+    </Link>
+  );
+}
 
 export default function Navbar() {
-  const navItems = [
+  const navItems: NavItem[] = [
     { label: "Anasayfa", href: "/" },
     {
       label: "Kurumsal",
@@ -17,9 +39,31 @@ export default function Navbar() {
       ],
     },
     { label: "Hizmetlerimiz", href: "/hizmetlerimiz" },
-    { label: "Ürünlerimiz", href: "#" },
+    {
+      label: "Ürünlerimiz",
+      href: "/analitik-hplc",
+      megaColumns: [
+        {
+          title: "Analitik Cihazlar",
+          links: [
+            { label: "Analitik HPLC", href: "/analitik-hplc" },
+            { label: "Benchtop NMR", href: "/benchtop-nmr" },
+            { label: "Ozmometre", href: "/ozmometre" },
+            { label: "Preparatif HPLC", href: "/preparatif-hplc" },
+          ],
+        },
+        {
+          title: "Temel Cihazlar",
+          links: [{ label: "Yakında eklenecek", href: "#" }],
+        },
+        {
+          title: "Sarf Malzemeler",
+          links: [{ label: "Yakında eklenecek", href: "#" }],
+        },
+      ],
+    },
     { label: "Market", href: "/market" },
-    { label: "Bilgi Merkezi", href: "#" },
+    { label: "Bilgi Merkezi", href: "/#bilgi-merkezi" },
     { label: "İletişim", href: "/iletisim" },
   ];
 
@@ -38,10 +82,38 @@ export default function Navbar() {
         </Link>
         <div className="hidden items-center gap-1 rounded-full bg-emerald-50/70 p-1.5 xl:flex">
           {navItems.map((item) =>
-            item.children ? (
+            item.megaColumns ? (
               <div key={item.label} className="group relative">
-                <Link href={item.href} className="rounded-full px-3 py-2 text-sm font-medium text-slate-600 transition-all duration-300 hover:bg-white hover:text-slate-900">
+                <Link
+                  href={item.href}
+                  className="inline-flex items-center gap-1 rounded-full px-3 py-2 text-sm font-medium text-slate-600 transition-all duration-300 hover:bg-white hover:text-slate-900"
+                >
                   {item.label}
+                  <ChevronDown className="h-3.5 w-3.5 transition group-hover:rotate-180" />
+                </Link>
+                <div className="invisible absolute left-1/2 top-full z-20 mt-2 w-[760px] -translate-x-1/2 rounded-2xl border border-slate-200 bg-white p-4 opacity-0 shadow-lg transition-all duration-200 group-hover:visible group-hover:opacity-100">
+                  <div className="grid gap-3 md:grid-cols-3">
+                    {item.megaColumns.map((col) => (
+                      <div key={col.title} className="rounded-xl border border-slate-100 bg-slate-50/50 p-3">
+                        <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">{col.title}</p>
+                        <div className="space-y-1">
+                          {col.links.map((link) => (
+                            <MegaMenuLink key={link.label} link={link} />
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            ) : item.children ? (
+              <div key={item.label} className="group relative">
+                <Link
+                  href={item.href}
+                  className="inline-flex items-center gap-1 rounded-full px-3 py-2 text-sm font-medium text-slate-600 transition-all duration-300 hover:bg-white hover:text-slate-900"
+                >
+                  {item.label}
+                  <ChevronDown className="h-3.5 w-3.5 transition group-hover:rotate-180" />
                 </Link>
                 <div className="invisible absolute left-0 top-full z-20 mt-2 w-64 rounded-2xl border border-slate-200 bg-white p-2 opacity-0 shadow-lg transition-all duration-200 group-hover:visible group-hover:opacity-100">
                   {item.children.map((child) => (
