@@ -1,6 +1,7 @@
 "use client";
 
 import Footer from "@/components/Footer";
+import FaqSection, { serviceFaqs } from "@/components/FaqSection";
 import Navbar from "@/components/Navbar";
 import { FlaskConical, GraduationCap, Settings, ShieldCheck } from "lucide-react";
 
@@ -108,8 +109,8 @@ export default function HizmetlerimizPage() {
         </div>
       </section>
 
+      <FaqSection items={serviceFaqs} intro="Teknik servis, validasyon ve metot geliştirme süreçleri hakkında en sık sorulan sorular." />
       <Footer />
     </main>
   );
 }
-

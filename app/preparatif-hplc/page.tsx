@@ -1,6 +1,7 @@
 "use client";
 
 import Footer from "@/components/Footer";
+import FaqSection, { hplcFaqs } from "@/components/FaqSection";
 import Navbar from "@/components/Navbar";
 import SectionImageFrame from "@/components/SectionImageFrame";
 import Image from "next/image";
@@ -280,6 +281,22 @@ export default function PreparatifHplcPage() {
         </div>
       </section>
 
+      <FaqSection
+        items={[
+          {
+            question: "Preparatif HPLC ne için kullanılır?",
+            answer:
+              "Preparatif HPLC, analitik ölçümden farklı olarak hedef bileşeni saflaştırmak, fraksiyon toplamak ve daha yüksek miktarda ürün elde etmek için kullanılır.",
+          },
+          {
+            question: "Preparatif HPLC sistemi nasıl ölçeklendirilir?",
+            answer:
+              "Akış hızı, kolon boyutu, pompa kapasitesi, dedektör tipi, fraksiyon toplayıcı ve solvent yönetimi hedef miktar ve saflık beklentisine göre birlikte seçilir.",
+          },
+          ...hplcFaqs.slice(1, 3),
+        ]}
+        intro="Saflaştırma, fraksiyon toplama ve ölçek büyütme kararları için sık sorulan sorular."
+      />
       <Footer />
     </main>
   );

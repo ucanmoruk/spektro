@@ -1,8 +1,10 @@
 "use client";
 
 import Footer from "@/components/Footer";
+import FaqSection, { serviceFaqs } from "@/components/FaqSection";
 import Navbar from "@/components/Navbar";
 import { Mail, MapPin, Phone } from "lucide-react";
+import ContactForm from "./ContactForm";
 
 export default function IletisimPage() {
   return (
@@ -64,22 +66,17 @@ export default function IletisimPage() {
             <h2 className="text-2xl font-semibold tracking-tight text-slate-900">İletişim Formu</h2>
             <p className="mt-2 text-sm text-slate-500">Mesajınızı bırakın, en kısa sürede size dönelim.</p>
 
-            <form className="mt-7 space-y-4">
-              <input type="text" placeholder="Ad Soyad*" className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none ring-spektro-blue/20 transition focus:ring-4" />
-              <input type="email" placeholder="E-mail*" className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none ring-spektro-blue/20 transition focus:ring-4" />
-              <input type="tel" placeholder="Telefon*" className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none ring-spektro-blue/20 transition focus:ring-4" />
-              <input type="text" placeholder="Firma" className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none ring-spektro-blue/20 transition focus:ring-4" />
-              <textarea placeholder="Mesajınız.." rows={5} className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none ring-spektro-blue/20 transition focus:ring-4" />
-              <button type="button" className="inline-flex rounded-full bg-slate-900 px-6 py-3 text-sm font-medium text-white transition hover:bg-slate-700">
-                Gönder
-              </button>
-            </form>
+            <ContactForm />
           </div>
         </div>
       </section>
 
+      <FaqSection
+        items={serviceFaqs}
+        title="İletişim Öncesi Sık Sorulan Sorular"
+        intro="Teklif veya teknik destek talebi göndermeden önce ihtiyaç duyabileceğiniz kısa bilgiler."
+      />
       <Footer />
     </main>
   );
 }
-

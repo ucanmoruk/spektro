@@ -1,73 +1,110 @@
 import { create } from "zustand";
-import { Product } from "@/data/mockProducts";
+import { persist, createJSONStorage } from "zustand/middleware";
 
-type DirectSaleItem = Product & { quantity: number };
+// DB'den bağımsız, hafif sepet kalemi (client tarafı).
+export type CartLine = {
+  id: number;
+  slug: string;
+  name: string;
+  brand: string | null;
+  price: number | null;
+  currency: string;
+  image: string | null;
+  isDirectSale: boolean;
+  quantity: number;
+};
+
+export type CartInput = Omit<CartLine, "quantity">;
+
+export type CartNotice = {
+  name: string;
+  image: string | null;
+  kind: "buy" | "quote";
+  ts: number;
+};
 
 type CartState = {
-  directSaleItems: DirectSaleItem[];
-  quoteItems: Product[];
-  addProduct: (product: Product) => void;
-  removeDirectSaleItem: (productId: string) => void;
-  removeQuoteItem: (productId: string) => void;
-  clearDirectSale: () => void;
+  buyItems: CartLine[]; // doğrudan satış (sepet)
+  quoteItems: CartLine[]; // teklif talep edilecek sistemler
+  notice: CartNotice | null; // son eklenen ürün bildirimi (toast)
+  clearNotice: () => void;
+  addProduct: (product: CartInput, quantity?: number) => void;
+  setQuantity: (id: number, quantity: number) => void;
+  removeBuyItem: (id: number) => void;
+  removeQuoteItem: (id: number) => void;
+  clearBuy: () => void;
   clearQuote: () => void;
-  directSaleTotal: () => number;
+  clearAll: () => void;
+  buyTotal: () => number;
   totalCount: () => number;
 };
 
-export const useCartStore = create<CartState>((set, get) => ({
-  directSaleItems: [],
-  quoteItems: [],
+export const useCartStore = create<CartState>()(
+  persist(
+    (set, get) => ({
+      buyItems: [],
+      quoteItems: [],
+      notice: null,
 
-  addProduct: (product) => {
-    if (product.isDirectSale) {
-      set((state) => {
-        const existing = state.directSaleItems.find((item) => item.id === product.id);
-        if (existing) {
-          return {
-            directSaleItems: state.directSaleItems.map((item) =>
-              item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item,
-            ),
-          };
+      clearNotice: () => set({ notice: null }),
+
+      addProduct: (product, quantity = 1) => {
+        set({
+          notice: {
+            name: product.name,
+            image: product.image,
+            kind: product.isDirectSale ? "buy" : "quote",
+            ts: Date.now(),
+          },
+        });
+        if (product.isDirectSale) {
+          set((state) => {
+            const existing = state.buyItems.find((i) => i.id === product.id);
+            if (existing) {
+              return {
+                buyItems: state.buyItems.map((i) =>
+                  i.id === product.id ? { ...i, quantity: i.quantity + quantity } : i,
+                ),
+              };
+            }
+            return { buyItems: [...state.buyItems, { ...product, quantity }] };
+          });
+          return;
         }
-        return {
-          directSaleItems: [...state.directSaleItems, { ...product, quantity: 1 }],
-        };
-      });
-      return;
-    }
+        set((state) => {
+          if (state.quoteItems.some((i) => i.id === product.id)) return state;
+          return { quoteItems: [...state.quoteItems, { ...product, quantity: 1 }] };
+        });
+      },
 
-    set((state) => {
-      if (state.quoteItems.some((item) => item.id === product.id)) {
-        return state;
-      }
-      return { quoteItems: [...state.quoteItems, product] };
-    });
-  },
+      setQuantity: (id, quantity) =>
+        set((state) => ({
+          buyItems: state.buyItems
+            .map((i) => (i.id === id ? { ...i, quantity: Math.max(1, quantity) } : i))
+            .filter((i) => i.quantity > 0),
+        })),
 
-  removeDirectSaleItem: (productId) =>
-    set((state) => ({
-      directSaleItems: state.directSaleItems.filter((item) => item.id !== productId),
-    })),
+      removeBuyItem: (id) =>
+        set((state) => ({ buyItems: state.buyItems.filter((i) => i.id !== id) })),
+      removeQuoteItem: (id) =>
+        set((state) => ({ quoteItems: state.quoteItems.filter((i) => i.id !== id) })),
 
-  removeQuoteItem: (productId) =>
-    set((state) => ({
-      quoteItems: state.quoteItems.filter((item) => item.id !== productId),
-    })),
+      clearBuy: () => set({ buyItems: [] }),
+      clearQuote: () => set({ quoteItems: [] }),
+      clearAll: () => set({ buyItems: [], quoteItems: [] }),
 
-  clearDirectSale: () => set({ directSaleItems: [] }),
-  clearQuote: () => set({ quoteItems: [] }),
+      buyTotal: () =>
+        get().buyItems.reduce((sum, i) => sum + (i.price ?? 0) * i.quantity, 0),
 
-  directSaleTotal: () =>
-    get().directSaleItems.reduce((sum, item) => {
-      if (item.price === null) return sum;
-      return sum + item.price * item.quantity;
-    }, 0),
-
-  totalCount: () => {
-    const directCount = get().directSaleItems.reduce((sum, item) => sum + item.quantity, 0);
-    const quoteCount = get().quoteItems.length;
-    return directCount + quoteCount;
-  },
-}));
-
+      totalCount: () => {
+        const buy = get().buyItems.reduce((s, i) => s + i.quantity, 0);
+        return buy + get().quoteItems.length;
+      },
+    }),
+    {
+      name: "spektrotek-cart",
+      storage: createJSONStorage(() => localStorage),
+      partialize: (state) => ({ buyItems: state.buyItems, quoteItems: state.quoteItems }),
+    },
+  ),
+);

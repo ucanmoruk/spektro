@@ -4,6 +4,7 @@ import Footer from "@/components/Footer";
 import KnauerProductRange from "@/components/KnauerProductRange";
 import Navbar from "@/components/Navbar";
 import Image from "next/image";
+import Link from "next/link";
 import {
   ArrowUpRight,
   Atom,
@@ -33,7 +34,7 @@ import {
 import { motion, useMotionValue, useSpring } from "framer-motion";
 import { Fragment, useEffect, useRef, useState } from "react";
 
-function MagneticCta({ primary = false, label, onClick }: { primary?: boolean; label: string; onClick?: () => void }) {
+function MagneticCta({ primary = false, label, href, onClick }: { primary?: boolean; label: string; href?: string; onClick?: () => void }) {
   const ref = useRef<HTMLButtonElement>(null);
   const x = useMotionValue(0);
   const y = useMotionValue(0);
@@ -54,22 +55,12 @@ function MagneticCta({ primary = false, label, onClick }: { primary?: boolean; l
     y.set(0);
   };
 
-  return (
-    <motion.button
-      ref={ref}
-      type="button"
-      style={{ x: sx, y: sy }}
-      onMouseMove={onMove}
-      onMouseLeave={onLeave}
-      onClick={() => onClick?.()}
-      whileTap={{ scale: 0.98 }}
-      whileHover="hover"
-      className={
-        primary
-          ? "group relative inline-flex min-w-[250px] items-center overflow-hidden rounded-full bg-slate-900 px-4 py-4 text-white shadow-lg transition-all duration-500 hover:-translate-y-1 hover:shadow-2xl"
-          : "group relative inline-flex min-w-[250px] items-center overflow-hidden rounded-full border border-slate-200 bg-white px-4 py-4 text-slate-900 transition-all duration-500 hover:bg-slate-100"
-      }
-    >
+  const className = primary
+    ? "group relative inline-flex min-w-[250px] items-center overflow-hidden rounded-full bg-slate-900 px-4 py-4 text-white shadow-lg transition-all duration-500 hover:-translate-y-1 hover:shadow-2xl"
+    : "group relative inline-flex min-w-[250px] items-center overflow-hidden rounded-full border border-slate-200 bg-white px-4 py-4 text-slate-900 transition-all duration-500 hover:bg-slate-100";
+
+  const content = (
+    <>
       <span className="block w-full pl-[10px] pr-10 text-left transition-all duration-300 group-hover:pl-10 group-hover:pr-[10px] group-hover:text-right">
         {label}
       </span>
@@ -88,6 +79,44 @@ function MagneticCta({ primary = false, label, onClick }: { primary?: boolean; l
       >
         <ArrowUpRight className="h-4 w-4" />
       </motion.span>
+    </>
+  );
+
+  if (href) {
+    return (
+      <motion.a
+        href={href}
+        style={{ x: sx, y: sy }}
+        onMouseMove={(e) => {
+          const rect = e.currentTarget.getBoundingClientRect();
+          const dx = e.clientX - (rect.left + rect.width / 2);
+          const dy = e.clientY - (rect.top + rect.height / 2);
+          x.set(dx * 0.14);
+          y.set(dy * 0.14);
+        }}
+        onMouseLeave={onLeave}
+        whileTap={{ scale: 0.98 }}
+        whileHover="hover"
+        className={className}
+      >
+        {content}
+      </motion.a>
+    );
+  }
+
+  return (
+    <motion.button
+      ref={ref}
+      type="button"
+      style={{ x: sx, y: sy }}
+      onMouseMove={onMove}
+      onMouseLeave={onLeave}
+      onClick={() => onClick?.()}
+      whileTap={{ scale: 0.98 }}
+      whileHover="hover"
+      className={className}
+    >
+      {content}
     </motion.button>
   );
 }
@@ -199,9 +228,9 @@ export default function Home() {
   return (
     <main className="bg-white text-slate-900">
       <Navbar />
-      <button className="fixed bottom-6 right-6 z-50 rounded-full bg-spektro-blue px-6 py-3 text-sm font-semibold text-white shadow-lg transition hover:bg-blue-700">
+      <Link href="/iletisim" className="fixed bottom-6 right-6 z-50 rounded-full bg-spektro-blue px-6 py-3 text-sm font-semibold text-white shadow-lg transition hover:bg-blue-700">
         Teklif Al
-      </button>
+      </Link>
 
       <section className="relative min-h-[100vh] overflow-hidden pb-24 pt-36">
         <div className="pointer-events-none absolute inset-0">
@@ -225,8 +254,8 @@ export default function Home() {
               Küresel analitik teknolojileri, çözüm mühendisliği vizyonumuzla projelendiriyoruz. Cihaz tedariğinin ötesine geçerek; metotlarınızı geliştiriyor, validasyon süreçlerinizi yönetiyor ve yatırımlarınızı baştan sona güvence altına alıyoruz.
             </motion.p>
             <div className="flex flex-wrap justify-center gap-4">
-              <MagneticCta primary label="Sisteminizi Birlikte Tasarlayalım" />
-              <MagneticCta label="Teknolojileri Keşfedin" />
+              <MagneticCta primary label="Sisteminizi Birlikte Tasarlayalım" href="/iletisim" />
+              <MagneticCta label="Teknolojileri Keşfedin" href="#teknolojiler" />
             </div>
           </div>
           <div className="mx-auto mt-14 max-w-3xl rounded-3xl border border-slate-100 bg-slate-50/50 p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.8)]">
@@ -247,7 +276,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="bg-slate-50 py-20">
+      <section id="teknolojiler" className="bg-slate-50 py-20">
         <div className="mx-auto w-full max-w-7xl px-6 md:px-10">
           <p className="mb-3 text-center text-sm font-semibold uppercase tracking-[0.12em] text-spektro-blue">Dünyanın Teknolojisi, Spektrotek Uzmanlığı</p>
           <p className="mb-10 text-center text-base font-normal text-slate-600">15 yıldan uzun süredir başarıyla temsil ettiğimiz markalar</p>
@@ -745,7 +774,7 @@ export default function Home() {
           </div>
 
           <div className="mt-12 flex justify-center">
-            <MagneticCta label="Bütçe Değerlendirmesi İste" />
+            <MagneticCta label="Bütçe Değerlendirmesi İste" href="/iletisim" />
           </div>
 
           <div className="mx-auto mt-16 max-w-6xl rounded-[2rem] border border-slate-800/25 bg-slate-900 px-8 py-10 text-white shadow-[0_24px_60px_-12px_rgba(15,23,42,0.35)] md:px-12 md:py-12">
@@ -755,13 +784,13 @@ export default function Home() {
                 <h3 className="mt-3 font-heading text-white">Laboratuvarınızın Geleceğini Birlikte Tasarlayalım!</h3>
               </div>
               <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:justify-end">
-                <MagneticCta primary label="Uzmanımıza Danışın" />
-                <MagneticCta label="Başarı Hikayelerimiz" />
+                <MagneticCta primary label="Uzmanımıza Danışın" href="/iletisim" />
+                <MagneticCta label="Başarı Hikayelerimiz" href="#basari-hikayesi" />
               </div>
             </div>
           </div>
 
-          <div className="mt-16 border-t border-slate-100 pt-16 md:mt-20 md:pt-20">
+          <div id="basari-hikayesi" className="mt-16 scroll-mt-28 border-t border-slate-100 pt-16 md:mt-20 md:pt-20">
             <p className="mb-5 text-center text-sm font-semibold uppercase tracking-[0.12em] text-spektro-blue">Aplikasyon Alanları</p>
             <h3 className="text-center font-heading text-slate-900">
               Karmaşık analizler için
@@ -840,7 +869,7 @@ export default function Home() {
                     Müşterimiz, eski sistemde 45 dakika süren safsızlık analizini hızlandırmak istiyordu. Resolution kaybı olmaksızın USP validasyon kriterlerinin de sağlanması şarttı.
                   </p>
                   <div className="mt-6 self-start">
-                    <MagneticCta primary label="Benzer Bir Projeniz mi Var?" />
+                    <MagneticCta primary label="Benzer Bir Projeniz mi Var?" href="/iletisim" />
                   </div>
                 </div>
                 <div>
@@ -927,6 +956,7 @@ export default function Home() {
                 description:
                   "Tağşiş tespiti için kromatografik metodu kısaltın; tekrarlanabilir pik alanı ve raporlanabilir çıktılarla kalite kontrolü güçlendirin.",
                 action: "PDF İndir",
+                href: "/hplc-temellerini-anlamak",
                 image:
                   "https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=1200&q=85",
                 imageAlt: "Zeytin ve zeytinyağı",
@@ -937,6 +967,7 @@ export default function Home() {
                 description:
                   "Mixed-mode seçicilik ile peptit karakterizasyonunda çözünürlük ve analiz süresi optimizasyonuna dair teknik özet ve karşılaştırmalı veriler.",
                 action: "İncele",
+                href: "/sielc/teknik-kaynaklar",
                 image: "https://sielc.com/wp-content/uploads/2022/10/Primesep-A.webp",
                 imageAlt: "SIELC Primesep mixed-mode HPLC kolonu",
               },
@@ -946,6 +977,7 @@ export default function Home() {
                 description:
                   "Operatör bağımlılığını azaltan otomatik hat kurulumu, izlenebilir iş akışı ve doğrulama uyumu ile kesintisiz üretim analitiği.",
                 action: "Oku",
+                href: "/haberler",
                 image: "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=1200&q=85",
                 imageAlt: "Laboratuvar otomasyonu ve analiz",
               },
@@ -975,14 +1007,13 @@ export default function Home() {
                     priority={index === 0}
                   />
                 </div>
-                <button
-                  type="button"
-                  className="relative mt-5 inline-flex cursor-default items-center gap-1.5 text-left text-sm font-semibold text-spektro-blue opacity-80 transition hover:opacity-100"
-                  aria-label={`${doc.action} — yakında`}
+                <a
+                  href={doc.href}
+                  className="relative mt-5 inline-flex items-center gap-1.5 text-left text-sm font-semibold text-spektro-blue opacity-80 transition hover:opacity-100"
                 >
                   {doc.action}
                   <ArrowUpRight className="h-4 w-4 shrink-0" aria-hidden />
-                </button>
+                </a>
               </motion.article>
             ))}
           </div>
@@ -995,13 +1026,13 @@ export default function Home() {
             <h2 className="font-heading text-slate-900">Laboratuvarınızı Bir Sonraki Seviyeye Taşımaya Hazır mısınız?</h2>
             <p className="mx-auto mt-4 max-w-2xl text-base font-normal text-slate-500">Ücretsiz proje analizi ile mevcut altyapınızı ölçelim, en hızlı geri dönüş sağlayacak modüler büyüme planını birlikte çıkaralım.</p>
             <div className="mt-8 flex justify-center">
-              <MagneticCta primary label="Ücretsiz Proje Analizi Alın" />
+              <MagneticCta primary label="Ücretsiz Proje Analizi Alın" href="/iletisim" />
             </div>
           </div>
         </div>
       </section>
 
-      <Footer />
+      <Footer showDistributorStrip={false} />
     </main>
   );
 }

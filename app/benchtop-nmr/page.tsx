@@ -1,6 +1,7 @@
 "use client";
 
 import Footer from "@/components/Footer";
+import FaqSection, { nmrFaqs } from "@/components/FaqSection";
 import Navbar from "@/components/Navbar";
 import SectionImageFrame from "@/components/SectionImageFrame";
 import Image from "next/image";
@@ -227,6 +228,7 @@ export default function BenchtopNmrPage() {
         </div>
       </section>
 
+      <FaqSection items={nmrFaqs} intro="Benchtop NMR cihazları, eğitim ve kalite kontrol uygulamaları hakkında kısa yanıtlar." />
       <Footer />
     </main>
   );

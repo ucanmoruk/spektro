@@ -45,3 +45,120 @@ button {
   font-style: italic;
   font-weight: 400;
 }
+
+.legacy-content {
+  color: #334155;
+  font-size: 17px;
+  line-height: 1.78;
+}
+
+.legacy-content :where(h1, h2, h3, h4, h5, h6) {
+  color: #0f172a;
+  font-family: var(--font-tight), Arial, Helvetica, sans-serif;
+  font-weight: 500;
+  line-height: 1.18;
+  margin: 1.8em 0 0.55em;
+}
+
+.legacy-content :where(h1) {
+  font-size: clamp(2.25rem, 5vw, 4rem);
+}
+
+.legacy-content :where(h2) {
+  font-size: clamp(1.8rem, 3vw, 2.75rem);
+}
+
+.legacy-content :where(h3) {
+  font-size: clamp(1.35rem, 2.2vw, 2rem);
+}
+
+.legacy-content :where(h4) {
+  font-size: 1.25rem;
+}
+
+.legacy-content :where(p, ul, ol, table, blockquote, figure) {
+  margin: 1em 0;
+}
+
+.legacy-content :where(strong) {
+  color: #0f172a;
+  font-weight: 600;
+}
+
+.legacy-content :where(a) {
+  color: var(--color-spektro-blue);
+  font-weight: 500;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.18em;
+}
+
+.legacy-content :where(ul, ol) {
+  padding-left: 1.4rem;
+}
+
+.legacy-content :where(ul) {
+  list-style: disc;
+}
+
+.legacy-content :where(ol) {
+  list-style: decimal;
+}
+
+.legacy-content :where(li) {
+  margin: 0.35em 0;
+}
+
+.legacy-content :where(img) {
+  display: block;
+  height: auto;
+  max-width: 100%;
+  border-radius: 16px;
+}
+
+.legacy-content :where(figure) {
+  overflow: hidden;
+}
+
+.legacy-content :where(hr) {
+  margin: 2rem 0;
+  border: 0;
+  border-top: 1px solid #e2e8f0;
+}
+
+.legacy-content :where(table) {
+  width: 100%;
+  border-collapse: collapse;
+  overflow: hidden;
+  border-radius: 12px;
+}
+
+.legacy-content :where(th, td) {
+  border: 1px solid #e2e8f0;
+  padding: 0.85rem 1rem;
+  text-align: left;
+  vertical-align: top;
+}
+
+.legacy-content :where(blockquote) {
+  border-left: 4px solid var(--color-spektro-accent);
+  color: #475569;
+  padding-left: 1.2rem;
+}
+
+.legacy-content > div:first-child > div:first-child :where(h1, h2) {
+  margin-top: 0;
+}
+
+@keyframes footer-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-footer-marquee {
+  animation: footer-marquee 34s linear infinite;
+}

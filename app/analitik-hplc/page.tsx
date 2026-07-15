@@ -1,6 +1,7 @@
 "use client";
 
 import Footer from "@/components/Footer";
+import FaqSection, { hplcFaqs } from "@/components/FaqSection";
 import Navbar from "@/components/Navbar";
 import SectionImageFrame from "@/components/SectionImageFrame";
 import Image from "next/image";
@@ -342,6 +343,10 @@ export default function AnalitikHplcPage() {
         </div>
       </section>
 
+      <FaqSection
+        items={hplcFaqs}
+        intro="Analitik HPLC yatırımı, metot geliştirme ve KNAUER AZURA platformu hakkında en sık gelen sorular."
+      />
       <Footer />
     </main>
   );
