@@ -314,18 +314,75 @@ export default function Navbar() {
         </div>
       </div>
       {mobileOpen ? (
-        <div className="absolute left-0 top-20 z-40 w-full border-b border-slate-200 bg-white px-6 py-4 shadow-lg xl:hidden">
-          <div className="grid gap-2">
-            {navItems.map((item) => (
-              <Link
-                key={item.label}
-                href={item.href}
-                onClick={() => setMobileOpen(false)}
-                className="rounded-xl px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 hover:text-slate-950"
-              >
-                {item.label}
-              </Link>
-            ))}
+        <div className="absolute left-0 top-20 z-40 max-h-[80vh] w-full overflow-y-auto border-b border-slate-200 bg-white px-6 py-4 shadow-lg xl:hidden">
+          <div className="grid gap-1.5">
+            {navItems.map((item) => {
+              const cols = item.megaColumns;
+              const children = item.children;
+              if (!cols && !children) {
+                return (
+                  <Link
+                    key={item.label}
+                    href={item.href}
+                    onClick={() => setMobileOpen(false)}
+                    className="rounded-xl px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 hover:text-slate-950"
+                  >
+                    {item.label}
+                  </Link>
+                );
+              }
+              return (
+                <details key={item.label} className="group rounded-xl">
+                  <summary className="flex cursor-pointer list-none items-center justify-between rounded-xl px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 [&::-webkit-details-marker]:hidden">
+                    {item.label}
+                    <ChevronDown className="h-4 w-4 text-slate-400 transition group-open:rotate-180" />
+                  </summary>
+                  <div className="mb-1 ml-3 mt-1 space-y-0.5 border-l border-slate-100 pl-2">
+                    <Link
+                      href={item.href}
+                      onClick={() => setMobileOpen(false)}
+                      className="block rounded-lg px-3 py-1.5 text-sm font-medium text-spektro-blue hover:bg-slate-50"
+                    >
+                      Tümü
+                    </Link>
+                    {cols
+                      ? cols.map((col) => (
+                          <div key={col.title}>
+                            <p className="px-3 pt-2 text-[11px] font-semibold uppercase tracking-wide text-slate-400">
+                              {col.title}
+                            </p>
+                            {(col.links ?? []).map((link) =>
+                              link.href ? (
+                                <Link
+                                  key={link.label}
+                                  href={link.href}
+                                  onClick={() => setMobileOpen(false)}
+                                  className="block rounded-lg px-3 py-1.5 text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                                >
+                                  {link.label}
+                                </Link>
+                              ) : (
+                                <span key={link.label} className="block px-3 py-1.5 text-sm text-slate-400">
+                                  {link.label}
+                                </span>
+                              ),
+                            )}
+                          </div>
+                        ))
+                      : children!.map((link) => (
+                          <Link
+                            key={link.label}
+                            href={link.href}
+                            onClick={() => setMobileOpen(false)}
+                            className="block rounded-lg px-3 py-1.5 text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                          >
+                            {link.label}
+                          </Link>
+                        ))}
+                  </div>
+                </details>
+              );
+            })}
             <Link
               href="/sepet"
               onClick={() => setMobileOpen(false)}

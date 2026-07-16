@@ -17,6 +17,13 @@
   --font-sans: var(--font-tight);
 }
 
+html,
+body {
+  /* Mobilde marquee vb. geniş öğelerin yatay taşmasını kırp; sağda/altta beyaz boşluk olmasın */
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
