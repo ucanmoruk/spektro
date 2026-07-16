@@ -10,7 +10,7 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ["/admin", "/hesabim", "/giris", "/kayit", "/sepet", "/odeme-sonuc", "/api"],
       },
     ],
-    sitemap: `${siteUrl}/sitemap.xml`,
+    sitemap: [`${siteUrl}/sitemap.xml`, `${siteUrl}/google-merchant.xml`],
     host: siteUrl,
   };
 }

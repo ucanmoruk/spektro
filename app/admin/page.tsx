@@ -16,10 +16,15 @@ export const metadata: Metadata = {
   title: "Admin Paneli | Spektrotek",
 };
 
-export default async function AdminPage() {
+export default async function AdminPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ productId?: string; product?: string }>;
+}) {
   const user = await getCurrentUser();
   if (!user) redirect("/giris?next=/admin");
   if (user.role !== "admin") redirect("/hesabim");
+  const { productId, product } = await searchParams;
 
   const [products, orders, quotes, brands, categories] = await Promise.all([
     listProductsForAdmin(),
@@ -54,6 +59,8 @@ export default async function AdminPage() {
           quotes={quotes}
           brands={brands}
           categories={categories}
+          initialProductId={productId ? Number(productId) : null}
+          initialNewProduct={product === "new"}
         />
       </section>
       <Footer />

@@ -1,9 +1,20 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { CheckCircle2, ExternalLink, Plus, Trash2, Upload, X } from "lucide-react";
+import {
+  CheckCircle2,
+  ChevronLeft,
+  ChevronRight,
+  ExternalLink,
+  Pencil,
+  Plus,
+  Search,
+  Trash2,
+  Upload,
+  X,
+} from "lucide-react";
 import type { Brand, Category, Product } from "@/lib/types";
 import { formatPrice } from "@/lib/format";
 import { slugify } from "@/lib/slug";
@@ -93,17 +104,62 @@ export function ProductManager({
   products,
   brands,
   categories,
+  initialProductId,
+  initialNewProduct = false,
 }: {
   products: Product[];
   brands: Brand[];
   categories: Category[];
+  initialProductId?: number | null;
+  initialNewProduct?: boolean;
 }) {
   const router = useRouter();
-  const [draft, setDraft] = useState<Draft>(emptyDraft);
+  const initialProduct = initialProductId
+    ? products.find((p) => p.id === initialProductId) ?? null
+    : null;
+  const [showForm] = useState(Boolean(initialNewProduct || initialProduct));
+  const [draft, setDraft] = useState<Draft>(() =>
+    initialProduct ? toDraft(initialProduct) : emptyDraft,
+  );
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [uploading, setUploading] = useState(false);
+  const [query, setQuery] = useState("");
+  const [pageSize, setPageSize] = useState(20);
+  const [page, setPage] = useState(1);
+
+  const filteredProducts = useMemo(() => {
+    const q = query.trim().toLocaleLowerCase("tr");
+    if (!q) return products;
+    return products.filter((p) => {
+      const haystack = [
+        p.name,
+        p.sku,
+        p.brandName,
+        p.categoryName,
+        p.shortDescription,
+      ]
+        .filter(Boolean)
+        .join(" ")
+        .toLocaleLowerCase("tr");
+      return haystack.includes(q);
+    });
+  }, [products, query]);
+
+  const totalPages = Math.max(1, Math.ceil(filteredProducts.length / pageSize));
+  const startIndex = (page - 1) * pageSize;
+  const paginatedProducts = filteredProducts.slice(startIndex, startIndex + pageSize);
+  const visibleStart = filteredProducts.length === 0 ? 0 : startIndex + 1;
+  const visibleEnd = Math.min(startIndex + pageSize, filteredProducts.length);
+
+  useEffect(() => {
+    setPage(1);
+  }, [query, pageSize]);
+
+  useEffect(() => {
+    setPage((current) => Math.min(current, totalPages));
+  }, [totalPages]);
 
   const upd = <K extends keyof Draft>(key: K, value: Draft[K]) => {
     setSuccess("");
@@ -202,6 +258,7 @@ export function ProductManager({
       // "düzenle" moduna geçsin. Boş sayfa/reset yok.
       if (!isUpdate && data.id) {
         setDraft((d) => ({ ...d, id: data.id, newBrand: "", newCategory: "" }));
+        window.history.replaceState(null, "", `/admin?productId=${data.id}`);
       } else {
         setDraft((d) => ({ ...d, newBrand: "", newCategory: "" }));
       }
@@ -226,6 +283,7 @@ export function ProductManager({
         return;
       }
       setDraft(emptyDraft);
+      router.push("/admin");
       router.refresh();
     } finally {
       setSaving(false);
@@ -235,44 +293,169 @@ export function ProductManager({
   const input =
     "w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm outline-none transition focus:border-spektro-blue/30 focus:ring-4 focus:ring-spektro-blue/10";
 
-  return (
-    <div className="grid gap-6 lg:grid-cols-[320px_1fr]">
-      <aside className="rounded-2xl border border-slate-200 bg-white p-4">
-        <div className="mb-3 flex items-center justify-between">
-          <h2 className="text-base font-semibold tracking-tight">Ürünler ({products.length})</h2>
-          <button
-            onClick={() => setDraft(emptyDraft)}
-            className="inline-flex items-center gap-1 rounded-lg bg-spektro-blue px-3 py-1.5 text-xs font-medium text-white"
+  if (!showForm) {
+    return (
+      <div className="rounded-2xl border border-slate-200 bg-white">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 p-4">
+          <div>
+            <h2 className="text-base font-semibold tracking-tight text-slate-900">
+              Ürünler
+            </h2>
+            <p className="mt-0.5 text-sm text-slate-500">
+              {filteredProducts.length} ürün
+              {filteredProducts.length > 0 ? (
+                <span className="text-slate-400"> · {visibleStart}-{visibleEnd} arası</span>
+              ) : null}
+            </p>
+          </div>
+          <Link
+            href="/admin?product=new"
+            className="inline-flex items-center gap-2 rounded-xl bg-spektro-blue px-4 py-2.5 text-sm font-medium text-white transition hover:opacity-90"
           >
-            <Plus className="h-3.5 w-3.5" /> Yeni
-          </button>
+            <Plus className="h-4 w-4" /> Yeni Ürün
+          </Link>
         </div>
-        <div className="max-h-[560px] space-y-2 overflow-y-auto pr-1">
-          {products.map((p) => (
-            <button
-              key={p.id}
-              onClick={() => setDraft(toDraft(p))}
-              className={`w-full rounded-xl border px-3 py-2.5 text-left transition ${
-                draft.id === p.id
-                  ? "border-spektro-blue bg-blue-50"
-                  : "border-slate-200 hover:bg-slate-50"
-              }`}
+
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 p-4">
+          <label className="relative min-w-[260px] flex-1">
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+            <input
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Ürün adı, SKU, marka veya kategori ara..."
+              className="w-full rounded-xl border border-slate-200 py-2.5 pl-9 pr-3 text-sm outline-none transition focus:border-spektro-blue/30 focus:ring-4 focus:ring-spektro-blue/10"
+            />
+          </label>
+          <label className="flex items-center gap-2 text-sm text-slate-500">
+            Göster
+            <select
+              value={pageSize}
+              onChange={(e) => setPageSize(Number(e.target.value))}
+              className="rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-700 outline-none focus:border-spektro-blue/30"
             >
-              <div className="flex items-center justify-between gap-2">
-                <p className="truncate text-sm font-semibold text-slate-900">{p.name}</p>
-                {!p.isActive ? (
-                  <span className="shrink-0 rounded bg-slate-100 px-1.5 py-0.5 text-[10px] text-slate-500">
-                    Pasif
-                  </span>
-                ) : null}
-              </div>
-              <p className="mt-0.5 truncate text-xs text-slate-500">
-                {p.brandName ?? "—"} · {p.isDirectSale ? formatPrice(p.price, p.currency) : "Teklif"}
-              </p>
-            </button>
-          ))}
+              <option value={10}>10</option>
+              <option value={20}>20</option>
+              <option value={50}>50</option>
+              <option value={100}>100</option>
+            </select>
+          </label>
         </div>
-      </aside>
+
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[1040px] text-sm">
+            <thead className="bg-slate-50 text-left text-xs uppercase tracking-wide text-slate-500">
+              <tr>
+                <th className="px-4 py-3 font-semibold">Ürün</th>
+                <th className="px-4 py-3 font-semibold">SKU</th>
+                <th className="px-4 py-3 font-semibold">Marka</th>
+                <th className="px-4 py-3 font-semibold">Kategori</th>
+                <th className="px-4 py-3 font-semibold">Fiyat</th>
+                <th className="px-4 py-3 font-semibold">Stok</th>
+                <th className="px-4 py-3 font-semibold">Durum</th>
+                <th className="px-4 py-3 text-right font-semibold">İşlem</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100">
+              {paginatedProducts.length === 0 ? (
+                <tr>
+                  <td colSpan={8} className="px-4 py-10 text-center text-slate-500">
+                    Arama kriterlerine uygun ürün bulunamadı.
+                  </td>
+                </tr>
+              ) : (
+                paginatedProducts.map((p) => (
+                  <tr key={p.id} className="transition hover:bg-slate-50">
+                    <td className="px-4 py-3">
+                      <div className="flex min-w-0 items-center gap-3">
+                        <ProductThumb
+                          src={p.primaryImage}
+                          alt={p.name}
+                          className="h-12 w-12 shrink-0 rounded-lg border border-slate-100"
+                        />
+                        <div className="min-w-0">
+                          <p className="line-clamp-2 font-medium text-slate-900">{p.name}</p>
+                          <p className="mt-0.5 text-xs text-slate-400">ID: {p.id}</p>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-4 py-3 text-slate-600">{p.sku || "—"}</td>
+                    <td className="px-4 py-3 text-slate-600">{p.brandName || "—"}</td>
+                    <td className="px-4 py-3 text-slate-600">{p.categoryName || "—"}</td>
+                    <td className="px-4 py-3 font-medium text-slate-900">
+                      {p.isDirectSale ? formatPrice(p.discountedPrice ?? p.price, p.currency) : "Teklif"}
+                    </td>
+                    <td className="px-4 py-3 text-slate-600">{p.stock}</td>
+                    <td className="px-4 py-3">
+                      <span
+                        className={`inline-flex rounded-full px-2 py-1 text-xs font-medium ${
+                          p.isActive
+                            ? "bg-emerald-50 text-emerald-700"
+                            : "bg-slate-100 text-slate-500"
+                        }`}
+                      >
+                        {p.isActive ? "Aktif" : "Pasif"}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 text-right">
+                      <Link
+                        href={`/admin?productId=${p.id}`}
+                        target="_blank"
+                        aria-label={`${p.name} ürününü düzenle`}
+                        className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 text-slate-600 transition hover:border-spektro-blue/30 hover:bg-blue-50 hover:text-spektro-blue"
+                      >
+                        <Pencil className="h-4 w-4" />
+                      </Link>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+
+        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 p-4">
+          <p className="text-sm text-slate-500">
+            Sayfa {page} / {totalPages}
+          </p>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setPage((current) => Math.max(1, current - 1))}
+              disabled={page === 1}
+              className="inline-flex items-center gap-1 rounded-lg border border-slate-200 px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              <ChevronLeft className="h-4 w-4" /> Önceki
+            </button>
+            <button
+              type="button"
+              onClick={() => setPage((current) => Math.min(totalPages, current + 1))}
+              disabled={page === totalPages}
+              className="inline-flex items-center gap-1 rounded-lg border border-slate-200 px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              Sonraki <ChevronRight className="h-4 w-4" />
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+        <Link
+          href="/admin"
+          className="inline-flex items-center gap-2 rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+        >
+          <ChevronLeft className="h-4 w-4" /> Ürün Listesine Dön
+        </Link>
+        <Link
+          href="/admin?product=new"
+          className="inline-flex items-center gap-2 rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-slate-800"
+        >
+          <Plus className="h-4 w-4" /> Yeni Ürün
+        </Link>
+      </div>
 
       <form onSubmit={save} className="rounded-2xl border border-slate-200 bg-white p-6">
         <h2 className="text-base font-semibold tracking-tight">
@@ -527,18 +710,6 @@ export function ProductManager({
             >
               <ExternalLink className="h-4 w-4" /> Görüntüle
             </Link>
-          ) : null}
-          {draft.id ? (
-            <button
-              type="button"
-              onClick={() => {
-                setDraft(emptyDraft);
-                setSuccess("");
-              }}
-              className="rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-medium text-slate-600 hover:bg-slate-50"
-            >
-              + Yeni Ürün
-            </button>
           ) : null}
           {draft.id ? (
             <button

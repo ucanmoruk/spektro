@@ -42,16 +42,16 @@ export function ProductTabs({ descriptionHtml, specs, shippingInfo, stock, isDir
         ))}
       </div>
 
-      <div className="p-6 md:p-8">
+      <div className="min-w-0 p-6 md:p-8">
         {active === "desc" && descriptionHtml ? (
           <div
-            className="legacy-content max-w-none text-[15px] leading-relaxed text-slate-600"
+            className="legacy-content min-w-0 max-w-full text-[15px] leading-relaxed text-slate-600"
             dangerouslySetInnerHTML={{ __html: descriptionHtml }}
           />
         ) : null}
 
         {active === "specs" ? (
-          <table className="w-full text-sm">
+          <table className="w-full table-fixed text-sm">
             <tbody>
               {specs.map((s) => (
                 <tr key={s.slug} className="border-b border-slate-100 last:border-0">
@@ -62,7 +62,7 @@ export function ProductTabs({ descriptionHtml, specs, shippingInfo, stock, isDir
                   >
                     {s.label}
                   </th>
-                  <td className="py-2.5 text-slate-600">{s.value}</td>
+                  <td className="break-words py-2.5 text-slate-600">{s.value}</td>
                 </tr>
               ))}
             </tbody>

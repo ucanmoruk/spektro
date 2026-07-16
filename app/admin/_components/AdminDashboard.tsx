@@ -17,9 +17,19 @@ type Props = {
   quotes: QuoteRequest[];
   brands: Brand[];
   categories: Category[];
+  initialProductId?: number | null;
+  initialNewProduct?: boolean;
 };
 
-export function AdminDashboard({ products, orders, quotes, brands, categories }: Props) {
+export function AdminDashboard({
+  products,
+  orders,
+  quotes,
+  brands,
+  categories,
+  initialProductId,
+  initialNewProduct = false,
+}: Props) {
   const [tab, setTab] = useState<Tab>("products");
 
   const revenue = orders
@@ -69,7 +79,13 @@ export function AdminDashboard({ products, orders, quotes, brands, categories }:
       </div>
 
       {tab === "products" ? (
-        <ProductManager products={products} brands={brands} categories={categories} />
+        <ProductManager
+          products={products}
+          brands={brands}
+          categories={categories}
+          initialProductId={initialProductId}
+          initialNewProduct={initialNewProduct}
+        />
       ) : null}
       {tab === "orders" ? <OrdersManager orders={orders} /> : null}
       {tab === "quotes" ? <QuotesManager quotes={quotes} /> : null}

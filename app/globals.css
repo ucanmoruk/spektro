@@ -57,6 +57,9 @@ button {
   color: #334155;
   font-size: 17px;
   line-height: 1.78;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  word-break: normal;
 }
 
 .legacy-content :where(h1, h2, h3, h4, h5, h6) {
@@ -85,6 +88,7 @@ button {
 
 .legacy-content :where(p, ul, ol, table, blockquote, figure) {
   margin: 1em 0;
+  max-width: 100%;
 }
 
 .legacy-content :where(strong) {
@@ -95,6 +99,7 @@ button {
 .legacy-content :where(a) {
   color: var(--color-spektro-blue);
   font-weight: 500;
+  overflow-wrap: anywhere;
   text-decoration: underline;
   text-decoration-thickness: 1px;
   text-underline-offset: 0.18em;
@@ -124,6 +129,7 @@ button {
 }
 
 .legacy-content :where(figure) {
+  max-width: 100%;
   overflow: hidden;
 }
 
@@ -135,9 +141,22 @@ button {
 
 .legacy-content :where(table) {
   width: 100%;
+  max-width: 100%;
+  display: block;
   border-collapse: collapse;
-  overflow: hidden;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  white-space: normal;
+  word-break: normal;
+  overflow-wrap: anywhere;
+  border-spacing: 0;
+  border: 1px solid #e2e8f0;
   border-radius: 12px;
+}
+
+.legacy-content :where(tbody, thead, tr) {
+  width: 100%;
 }
 
 .legacy-content :where(th, td) {
@@ -145,6 +164,7 @@ button {
   padding: 0.85rem 1rem;
   text-align: left;
   vertical-align: top;
+  overflow-wrap: anywhere;
 }
 
 .legacy-content :where(blockquote) {

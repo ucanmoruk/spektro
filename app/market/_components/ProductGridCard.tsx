@@ -40,7 +40,7 @@ export function ProductGridCard({ product }: { product: StoreProduct }) {
           {product.brand ?? " "}
         </span>
         {/* Başlık — daima 2 satır yüksekliğinde ayrılır */}
-        <h3 className="mt-1 line-clamp-2 min-h-[2.5rem] text-sm font-semibold leading-tight tracking-tight text-slate-900">
+        <h3 className="mt-1 line-clamp-2 min-h-[2.5rem] break-words text-sm font-semibold leading-tight tracking-tight text-slate-900">
           <Link href={`/market/${product.slug}`} className="hover:text-spektro-blue">
             {product.name}
           </Link>

@@ -89,7 +89,7 @@ CREATE TABLE IF NOT EXISTS products (
   brand_id          BIGINT UNSIGNED NULL,
   category_id       BIGINT UNSIGNED NULL,
   sku               VARCHAR(80)  NULL,
-  short_description VARCHAR(400) NULL,
+  short_description TEXT NULL,
   description       MEDIUMTEXT   NULL,          -- zengin metin (HTML)
   shipping_info     MEDIUMTEXT   NULL,          -- stok & kargo açıklaması
   price             DECIMAL(12,2) NULL,       -- NULL => "Fiyat için danışın"

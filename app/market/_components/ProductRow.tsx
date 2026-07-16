@@ -50,13 +50,13 @@ export function ProductRow({ product }: { product: StoreProduct }) {
             <span className="text-[11px] text-slate-400">· {product.category}</span>
           ) : null}
         </div>
-        <h3 className="mt-1 truncate text-base font-semibold tracking-tight text-slate-900">
+        <h3 className="mt-1 line-clamp-2 break-words text-base font-semibold tracking-tight text-slate-900">
           <Link href={`/market/${product.slug}`} className="hover:text-spektro-blue">
             {product.name}
           </Link>
         </h3>
         {product.shortDescription ? (
-          <p className="mt-1 line-clamp-2 text-sm text-slate-500">{product.shortDescription}</p>
+          <p className="mt-1 line-clamp-2 break-words text-sm text-slate-500">{product.shortDescription}</p>
         ) : null}
         {product.sku ? (
           <p className="mt-1 text-xs text-slate-400">SKU: {product.sku}</p>

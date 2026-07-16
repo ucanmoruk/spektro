@@ -111,7 +111,16 @@ export default async function ProductPage({ params }: Params) {
           {product.categoryName ? (
             <>
               <ChevronRight className="h-3.5 w-3.5" />
-              <span>{product.categoryName}</span>
+              {product.categorySlug ? (
+                <Link
+                  href={`/market?kategori=${product.categorySlug}`}
+                  className="hover:text-spektro-blue"
+                >
+                  {product.categoryName}
+                </Link>
+              ) : (
+                <span>{product.categoryName}</span>
+              )}
             </>
           ) : null}
           <ChevronRight className="h-3.5 w-3.5" />
@@ -132,7 +141,7 @@ export default async function ProductPage({ params }: Params) {
             {product.name}
           </h1>
           {product.shortDescription ? (
-            <p className="mt-3 text-base leading-relaxed text-slate-600">
+            <p className="mt-3 max-w-full break-words text-base leading-relaxed text-slate-600">
               {product.shortDescription}
             </p>
           ) : null}

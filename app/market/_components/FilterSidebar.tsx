@@ -58,7 +58,7 @@ export function FilterSidebar({
     selectedCategories.length > 0 || selectedBrands.length > 0 || search.length > 0;
 
   return (
-    <aside className="h-fit rounded-2xl border border-slate-200 bg-white p-5 lg:sticky lg:top-24">
+    <aside className="h-fit max-h-[calc(100vh-8rem)] overflow-y-auto rounded-2xl border border-slate-200 bg-white p-5">
       <div className="relative">
         <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
         <input
