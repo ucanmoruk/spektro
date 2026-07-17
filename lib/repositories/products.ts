@@ -1,6 +1,6 @@
 import "server-only";
 import { execute, query, queryOne } from "../db";
-import type { Product, ProductImage, ProductSpec } from "../types";
+import type { FeaturedSlot, Product, ProductImage, ProductSpec } from "../types";
 
 type ProductRow = {
   id: number;
@@ -21,6 +21,7 @@ type ProductRow = {
   stock: number;
   is_direct_sale: number;
   is_active: number;
+  featured_slot: FeaturedSlot | null;
   seo_title: string | null;
   seo_description: string | null;
   seo_keywords: string | null;
@@ -55,6 +56,7 @@ function mapProduct(
     stock: row.stock,
     isDirectSale: !!row.is_direct_sale,
     isActive: !!row.is_active,
+    featuredSlot: row.featured_slot,
     seoTitle: row.seo_title,
     seoDescription: row.seo_description,
     seoKeywords: row.seo_keywords,
@@ -246,6 +248,7 @@ export type ProductInput = {
   stock: number;
   isDirectSale: boolean;
   isActive: boolean;
+  featuredSlot: FeaturedSlot | null;
   seoTitle: string | null;
   seoDescription: string | null;
   seoKeywords: string | null;
@@ -257,13 +260,14 @@ export async function createProduct(input: ProductInput): Promise<number> {
   const result = await execute(
     `INSERT INTO products
        (slug, name, brand_id, category_id, sku, short_description, description, shipping_info,
-        price, discounted_price, currency, stock, is_direct_sale, is_active,
+        price, discounted_price, currency, stock, is_direct_sale, is_active, featured_slot,
         seo_title, seo_description, seo_keywords)
-     VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+     VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
     [
       input.slug, input.name, input.brandId, input.categoryId, input.sku,
       input.shortDescription, input.description, input.shippingInfo, input.price, input.discountedPrice,
       input.currency, input.stock, input.isDirectSale ? 1 : 0, input.isActive ? 1 : 0,
+      input.featuredSlot,
       input.seoTitle, input.seoDescription, input.seoKeywords,
     ],
   );
@@ -276,13 +280,14 @@ export async function updateProduct(id: number, input: ProductInput): Promise<vo
   await execute(
     `UPDATE products SET
        slug=?, name=?, brand_id=?, category_id=?, sku=?, short_description=?, description=?, shipping_info=?,
-       price=?, discounted_price=?, currency=?, stock=?, is_direct_sale=?, is_active=?,
+       price=?, discounted_price=?, currency=?, stock=?, is_direct_sale=?, is_active=?, featured_slot=?,
        seo_title=?, seo_description=?, seo_keywords=?
      WHERE id=?`,
     [
       input.slug, input.name, input.brandId, input.categoryId, input.sku,
       input.shortDescription, input.description, input.shippingInfo, input.price, input.discountedPrice,
       input.currency, input.stock, input.isDirectSale ? 1 : 0, input.isActive ? 1 : 0,
+      input.featuredSlot,
       input.seoTitle, input.seoDescription, input.seoKeywords, id,
     ],
   );

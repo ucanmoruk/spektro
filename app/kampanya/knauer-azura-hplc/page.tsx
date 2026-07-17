@@ -6,7 +6,6 @@ import Navbar from "@/components/Navbar";
 import { metadataFor } from "@/lib/seo";
 import {
   ArrowUpRight,
-  BadgeEuro,
   CalendarClock,
   CheckCircle2,
   CreditCard,
@@ -147,10 +146,10 @@ export default function KnauerAzuraCampaignPage() {
                 </span>
               </div>
               <div className="relative mt-8">
-                <p className="text-sm text-cyan-100">Kampanyalı net fiyat</p>
-                <p className="mt-2 text-4xl font-semibold tracking-tight md:text-5xl">34.900 € + KDV</p>
+                <p className="text-sm text-cyan-100">Özel kampanya koşulları</p>
+                <p className="mt-2 text-4xl font-semibold tracking-tight md:text-5xl">Teklif ile paylaşılır</p>
                 <p className="mt-3 text-sm leading-relaxed text-slate-300">
-                  Son gün: 15 Ağustos 2026. Kampanya sınırlı stok ve proje uygunluğu ile geçerlidir.
+                  Son gün: 15 Ağustos 2026. Kampanya koşulları sınırlı stok, proje kapsamı ve teslimat planına göre teklif aşamasında netleştirilir.
                 </p>
               </div>
               <div className="relative mt-8 grid gap-3 sm:grid-cols-2">
@@ -287,7 +286,7 @@ export default function KnauerAzuraCampaignPage() {
           </div>
           <div className="grid gap-4 sm:grid-cols-3">
             {[
-              { icon: BadgeEuro, title: "34.900 € + KDV", body: "Kampanyalı net fiyat" },
+              { icon: PackageCheck, title: "Özel teklif", body: "Proje kapsamına göre" },
               { icon: CreditCard, title: "%50 peşin", body: "Sipariş onayında" },
               { icon: TimerReset, title: "2 taksit", body: "Kurulum sonrası" },
             ].map((item) => {

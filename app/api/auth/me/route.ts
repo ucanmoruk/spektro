@@ -10,7 +10,13 @@ export async function GET() {
       email: user.email,
       fullName: user.fullName,
       phone: user.phone,
+      invoiceType: user.invoiceType,
       company: user.company,
+      taxOffice: user.taxOffice,
+      taxNumber: user.taxNumber,
+      address: user.address,
+      city: user.city,
+      district: user.district,
       role: user.role,
     },
   });

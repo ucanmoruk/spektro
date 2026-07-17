@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build && node scripts/fix-webpack-server-chunks.mjs",
     "prestart": "node scripts/fix-webpack-server-chunks.mjs",
-    "start": "next start",
+    "start": "node server.js",
+    "start:next": "next start",
     "lint": "eslint",
     "db:setup": "node scripts/db-setup.mjs",
     "db:migrate": "node scripts/db-migrate.mjs"

@@ -1,12 +1,24 @@
 import { slugify } from "./slug";
 import type { ProductInput } from "./repositories/products";
-import type { ProductSpec } from "./types";
+import type { FeaturedSlot, ProductSpec } from "./types";
 
 const toNum = (v: unknown): number | null => {
   if (v === null || v === undefined || v === "") return null;
   const n = Number(v);
   return Number.isFinite(n) ? n : null;
 };
+
+const FEATURED_SLOTS = new Set<FeaturedSlot>([
+  "best-discount",
+  "weekly-product",
+  "new-arrival",
+]);
+
+function featuredSlot(value: unknown): FeaturedSlot | null {
+  if (!value) return null;
+  const slot = String(value);
+  return FEATURED_SLOTS.has(slot as FeaturedSlot) ? (slot as FeaturedSlot) : null;
+}
 
 /** Admin panelinden gelen ham gövdeyi doğrulanmış ProductInput'a çevirir. */
 export function parseProductInput(body: Record<string, unknown>): ProductInput {
@@ -49,6 +61,7 @@ export function parseProductInput(body: Record<string, unknown>): ProductInput {
     stock: Math.max(0, Math.trunc(toNum(body.stock) ?? 0)),
     isDirectSale: Boolean(body.isDirectSale),
     isActive: body.isActive === undefined ? true : Boolean(body.isActive),
+    featuredSlot: featuredSlot(body.featuredSlot),
     seoTitle: body.seoTitle ? String(body.seoTitle) : null,
     seoDescription: body.seoDescription ? String(body.seoDescription) : null,
     seoKeywords: body.seoKeywords ? String(body.seoKeywords) : null,

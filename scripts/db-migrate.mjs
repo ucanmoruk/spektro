@@ -74,6 +74,32 @@ async function main() {
     `);
     console.log("✓ product_specs tablosu hazır");
 
+    const addColumn = async (table, column, ddl) => {
+      if (!(await columnExists(conn, db, table, column))) {
+        await conn.query(`ALTER TABLE ${table} ADD COLUMN ${ddl}`);
+        console.log(`✓ ${table}.${column} eklendi`);
+      } else {
+        console.log(`• ${table}.${column} zaten var`);
+      }
+    };
+
+    await addColumn(
+      "users",
+      "invoice_type",
+      "invoice_type ENUM('individual','corporate') NOT NULL DEFAULT 'individual' AFTER phone",
+    );
+    await addColumn("users", "address", "address VARCHAR(500) NULL AFTER tax_number");
+    await addColumn("users", "city", "city VARCHAR(120) NULL AFTER address");
+    await addColumn("users", "district", "district VARCHAR(120) NULL AFTER city");
+
+    await addColumn(
+      "orders",
+      "invoice_type",
+      "invoice_type ENUM('individual','corporate') NOT NULL DEFAULT 'individual' AFTER customer_phone",
+    );
+    await addColumn("orders", "tax_office", "tax_office VARCHAR(120) NULL AFTER company");
+    await addColumn("orders", "tax_number", "tax_number VARCHAR(40) NULL AFTER tax_office");
+
     console.log("Migration tamamlandı.");
   } finally {
     await conn.end();

@@ -16,6 +16,7 @@ export type StoreProduct = {
   currency: string;
   stock: number;
   isDirectSale: boolean;
+  featuredSlot: Product["featuredSlot"];
   image: string | null;
 };
 
@@ -35,6 +36,7 @@ export function toStoreProduct(p: Product, brandSlug: string | null = null): Sto
     currency: p.currency,
     stock: p.stock,
     isDirectSale: p.isDirectSale,
+    featuredSlot: p.featuredSlot,
     image: p.primaryImage,
   };
 }

@@ -5,7 +5,9 @@ import { listProducts } from "@/lib/repositories/products";
 import { listBrands, listCategories } from "@/lib/repositories/taxonomy";
 import { metadataFor } from "@/lib/seo";
 import { toStoreProduct } from "@/lib/store-view";
+import { FeaturedProducts } from "./_components/FeaturedProducts";
 import { MarketClient } from "./_components/MarketClient";
+import { QuickCategoryTiles } from "./_components/QuickCategoryTiles";
 import type { FilterOption } from "./_components/FilterSidebar";
 
 export const dynamic = "force-dynamic";
@@ -15,9 +17,9 @@ export const metadata: Metadata = metadataFor("market");
 export default async function MarketPage({
   searchParams,
 }: {
-  searchParams: Promise<{ kategori?: string }>;
+  searchParams: Promise<{ kategori?: string; q?: string }>;
 }) {
-  const { kategori } = await searchParams;
+  const { kategori, q } = await searchParams;
   const [products, brands, categories] = await Promise.all([
     listProducts(),
     listBrands(),
@@ -60,12 +62,16 @@ export default async function MarketPage({
         </div>
       </section>
 
-      <section className="py-10 md:py-14">
+      <FeaturedProducts products={storeProducts} />
+      <QuickCategoryTiles />
+
+      <section id="urun-listesi" className="scroll-mt-28 py-10 md:py-14">
         <MarketClient
           products={storeProducts}
           categories={categoryOptions}
           brands={brandOptions}
           initialCategory={kategori}
+          initialSearch={q}
         />
       </section>
 

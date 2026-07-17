@@ -13,7 +13,7 @@ const compat = new FlatCompat({
 const eslintConfig = [
   ...compat.extends("next/core-web-vitals"),
   {
-    ignores: [".next/**", "out/**", "build/**", "next-env.d.ts"],
+    ignores: [".deploy-cpanel/**", ".next/**", "out/**", "build/**", "next-env.d.ts"],
   },
 ];
 

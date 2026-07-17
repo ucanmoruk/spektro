@@ -14,19 +14,20 @@ type Props = {
   categories: FilterOption[];
   brands: FilterOption[];
   initialCategory?: string;
+  initialSearch?: string;
 };
 
 type SortKey = "new" | "price-asc" | "price-desc" | "name";
 type ViewMode = "list" | "grid";
 type PageSize = 12 | 24 | 48 | 96;
 
-export function MarketClient({ products, categories, brands, initialCategory }: Props) {
+export function MarketClient({ products, categories, brands, initialCategory, initialSearch }: Props) {
   const [selectedCategories, setSelectedCategories] = useState<string[]>(
     initialCategory ? [initialCategory] : [],
   );
   const [view, setView] = useState<ViewMode>("list");
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState(initialSearch ?? "");
   const [sort, setSort] = useState<SortKey>("new");
   const [pageSize, setPageSize] = useState<PageSize>(12);
   const [page, setPage] = useState(1);
@@ -34,6 +35,14 @@ export function MarketClient({ products, categories, brands, initialCategory }: 
   const [filtersOpen, setFiltersOpen] = useState(false);
 
   const totalCount = useCartStore((s) => s.totalCount());
+
+  useEffect(() => {
+    setSelectedCategories(initialCategory ? [initialCategory] : []);
+  }, [initialCategory]);
+
+  useEffect(() => {
+    setSearch(initialSearch ?? "");
+  }, [initialSearch]);
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();

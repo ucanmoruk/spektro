@@ -126,7 +126,7 @@ export const paytrProvider: PaymentProvider = {
 
     return {
       status: "redirect",
-      redirectUrl: `https://www.paytr.com/odeme/guvenli/${data.token}`,
+      redirectUrl: `${siteUrl()}/odeme/paytr?token=${encodeURIComponent(data.token)}`,
       providerRef: merchantOid,
     };
   },

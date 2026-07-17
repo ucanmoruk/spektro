@@ -17,5 +17,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     changeFrequency: "weekly" as const,
   }));
 
-  return [...staticEntries, ...legacyEntries, ...postEntries, ...productEntries];
+  const seen = new Set<string>();
+  return [...staticEntries, ...legacyEntries, ...postEntries, ...productEntries].filter((entry) => {
+    if (seen.has(entry.url)) return false;
+    seen.add(entry.url);
+    return true;
+  });
 }

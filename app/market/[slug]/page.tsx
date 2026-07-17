@@ -7,7 +7,7 @@ import JsonLd from "@/components/JsonLd";
 import Navbar from "@/components/Navbar";
 import { formatPrice } from "@/lib/format";
 import { getProductBySlug, getRelatedProducts } from "@/lib/repositories/products";
-import { absoluteUrl, breadcrumbJsonLd, siteUrl } from "@/lib/seo";
+import { absoluteMediaUrl, absoluteUrl, breadcrumbJsonLd, organization } from "@/lib/seo";
 import { toStoreProduct } from "@/lib/store-view";
 import { ProductGallery } from "./_components/ProductGallery";
 import { ProductDetailActions } from "./_components/ProductDetailActions";
@@ -38,7 +38,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
       type: "website",
       images: [
         {
-          url: product.images[0]?.url || `${siteUrl}/brand/spektrotek-logo.png`,
+          url: absoluteMediaUrl(product.images[0]?.url),
           width: 1200,
           height: 630,
           alt: product.name,
@@ -49,7 +49,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
       card: "summary_large_image",
       title: product.seoTitle || `${product.name} | Spektrotek`,
       description: product.seoDescription || product.shortDescription || undefined,
-      images: [product.images[0]?.url || `${siteUrl}/brand/spektrotek-logo.png`],
+      images: [absoluteMediaUrl(product.images[0]?.url)],
     },
   };
 }
@@ -75,16 +75,23 @@ export default async function ProductPage({ params }: Params) {
     "@type": "Product",
     name: product.name,
     description: product.seoDescription || product.shortDescription || product.description,
-    image: images.length ? images : [`${siteUrl}/brand/spektrotek-logo.png`],
+    image: images.length ? images.map((image) => absoluteMediaUrl(image)) : [absoluteMediaUrl()],
     sku: product.sku || undefined,
     brand: product.brandName ? { "@type": "Brand", name: product.brandName } : undefined,
+    category: product.categoryName || undefined,
     offers: product.isDirectSale
       ? {
           "@type": "Offer",
           url: absoluteUrl(`market/${product.slug}`),
           priceCurrency: product.currency,
-          price: price ?? undefined,
+          price: price !== null ? Number(price).toFixed(2) : undefined,
           availability: product.stock > 0 ? "https://schema.org/InStock" : "https://schema.org/PreOrder",
+          itemCondition: "https://schema.org/NewCondition",
+          seller: {
+            "@type": "Organization",
+            name: organization.name,
+            url: organization.url,
+          },
         }
       : undefined,
   };

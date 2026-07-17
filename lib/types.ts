@@ -8,9 +8,13 @@ export type User = {
   email: string;
   fullName: string;
   phone: string | null;
+  invoiceType: "individual" | "corporate";
   company: string | null;
   taxOffice: string | null;
   taxNumber: string | null;
+  address: string | null;
+  city: string | null;
+  district: string | null;
   role: UserRole;
   createdAt: string;
 };
@@ -43,6 +47,8 @@ export type ProductSpec = {
   value: string;
 };
 
+export type FeaturedSlot = "best-discount" | "weekly-product" | "new-arrival";
+
 export type Product = {
   id: number;
   slug: string;
@@ -62,6 +68,7 @@ export type Product = {
   stock: number;
   isDirectSale: boolean;
   isActive: boolean;
+  featuredSlot: FeaturedSlot | null;
   seoTitle: string | null;
   seoDescription: string | null;
   seoKeywords: string | null;
@@ -106,7 +113,10 @@ export type Order = {
   customerName: string;
   customerEmail: string;
   customerPhone: string | null;
+  invoiceType: "individual" | "corporate";
   company: string | null;
+  taxOffice: string | null;
+  taxNumber: string | null;
   shippingAddress: string | null;
   shippingCity: string | null;
   shippingCountry: string | null;

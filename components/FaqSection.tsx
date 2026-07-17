@@ -1,4 +1,5 @@
 import JsonLd from "@/components/JsonLd";
+import { faqPageJsonLd } from "@/lib/seo";
 
 export type FaqItem = {
   question: string;
@@ -93,18 +94,7 @@ export default function FaqSection({
   intro = "Laboratuvar yatırımı öncesinde en sık sorulan soruları kısa ve net şekilde yanıtladık.",
   items,
 }: FaqSectionProps) {
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    mainEntity: items.map((item) => ({
-      "@type": "Question",
-      name: item.question,
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: item.answer,
-      },
-    })),
-  };
+  const jsonLd = faqPageJsonLd(items);
 
   return (
     <section className="border-t border-slate-100 bg-slate-50 py-14 md:py-20">

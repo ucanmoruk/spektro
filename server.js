@@ -4,7 +4,10 @@
 // Passenger, PORT ortam değişkenini sağlar; Next.js üretim yapısını (.next) sunar.
 // Önce `npm run build` çalıştırılmış olmalıdır.
 const { createServer } = require("node:http");
+const { loadEnvConfig } = require("@next/env");
 const next = require("next");
+
+loadEnvConfig(process.cwd(), false);
 
 const port = process.env.PORT || 3000;
 const app = next({ dev: false });

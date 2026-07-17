@@ -16,7 +16,10 @@ type OrderRow = {
   customer_name: string;
   customer_email: string;
   customer_phone: string | null;
+  invoice_type: "individual" | "corporate";
   company: string | null;
+  tax_office: string | null;
+  tax_number: string | null;
   shipping_address: string | null;
   shipping_city: string | null;
   shipping_country: string | null;
@@ -63,7 +66,10 @@ function mapOrder(r: OrderRow, items: OrderItem[] = []): Order {
     customerName: r.customer_name,
     customerEmail: r.customer_email,
     customerPhone: r.customer_phone,
+    invoiceType: r.invoice_type ?? "individual",
     company: r.company,
+    taxOffice: r.tax_office,
+    taxNumber: r.tax_number,
     shippingAddress: r.shipping_address,
     shippingCity: r.shipping_city,
     shippingCountry: r.shipping_country,
@@ -82,7 +88,10 @@ export type NewOrderInput = {
   customerName: string;
   customerEmail: string;
   customerPhone?: string | null;
+  invoiceType?: "individual" | "corporate";
   company?: string | null;
+  taxOffice?: string | null;
+  taxNumber?: string | null;
   shippingAddress?: string | null;
   shippingCity?: string | null;
   shippingCountry?: string | null;
@@ -104,13 +113,15 @@ export async function createOrder(input: NewOrderInput): Promise<Order> {
     const [res] = await conn.execute<ResultSetHeader>(
       `INSERT INTO orders
         (order_number, user_id, status, currency, subtotal, total,
-         customer_name, customer_email, customer_phone, company,
-         shipping_address, shipping_city, shipping_country, notes,
+         customer_name, customer_email, customer_phone, invoice_type, company,
+         tax_office, tax_number, shipping_address, shipping_city, shipping_country, notes,
          payment_provider, payment_status)
-       VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+       VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
       [
         "PENDING", input.userId, "pending", input.currency, subtotal, total,
-        input.customerName, input.customerEmail, input.customerPhone ?? null, input.company ?? null,
+        input.customerName, input.customerEmail, input.customerPhone ?? null,
+        input.invoiceType ?? "individual", input.company ?? null,
+        input.taxOffice ?? null, input.taxNumber ?? null,
         input.shippingAddress ?? null, input.shippingCity ?? null, input.shippingCountry ?? "Türkiye",
         input.notes ?? null, input.paymentProvider, "unpaid",
       ],

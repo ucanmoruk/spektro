@@ -23,9 +23,13 @@ CREATE TABLE IF NOT EXISTS users (
   password_hash   VARCHAR(255) NOT NULL,
   full_name       VARCHAR(160) NOT NULL,
   phone           VARCHAR(40)  NULL,
+  invoice_type    ENUM('individual','corporate') NOT NULL DEFAULT 'individual',
   company         VARCHAR(160) NULL,
   tax_office      VARCHAR(120) NULL,          -- vergi dairesi (kurumsal)
   tax_number      VARCHAR(40)  NULL,          -- vergi/TC no
+  address         VARCHAR(500) NULL,
+  city            VARCHAR(120) NULL,
+  district        VARCHAR(120) NULL,
   role            ENUM('customer','admin') NOT NULL DEFAULT 'customer',
   is_active       TINYINT(1) NOT NULL DEFAULT 1,
   created_at      DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -98,6 +102,7 @@ CREATE TABLE IF NOT EXISTS products (
   stock             INT NOT NULL DEFAULT 0,
   is_direct_sale    TINYINT(1) NOT NULL DEFAULT 1,  -- 1: sepete ekle/öde, 0: teklif iste
   is_active         TINYINT(1) NOT NULL DEFAULT 1,
+  featured_slot     VARCHAR(40) NULL,
   seo_title         VARCHAR(220) NULL,
   seo_description   VARCHAR(400) NULL,
   seo_keywords      VARCHAR(400) NULL,
@@ -161,7 +166,10 @@ CREATE TABLE IF NOT EXISTS orders (
   customer_name     VARCHAR(160) NOT NULL,
   customer_email    VARCHAR(190) NOT NULL,
   customer_phone    VARCHAR(40)  NULL,
+  invoice_type      ENUM('individual','corporate') NOT NULL DEFAULT 'individual',
   company           VARCHAR(160) NULL,
+  tax_office        VARCHAR(120) NULL,
+  tax_number        VARCHAR(40) NULL,
   shipping_address  VARCHAR(500) NULL,
   shipping_city     VARCHAR(120) NULL,
   shipping_country  VARCHAR(120) NULL DEFAULT 'Türkiye',

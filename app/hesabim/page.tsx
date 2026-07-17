@@ -9,6 +9,7 @@ import { getCurrentUser } from "@/lib/auth";
 import { listOrdersByUser } from "@/lib/repositories/orders";
 import { formatDate, formatPrice } from "@/lib/format";
 import { ORDER_STATUS_COLORS, ORDER_STATUS_LABELS } from "@/lib/status";
+import { AccountProfileForm } from "./_components/AccountProfileForm";
 import { OrderStatusStepper } from "./_components/OrderStatusStepper";
 
 export const dynamic = "force-dynamic";
@@ -58,6 +59,8 @@ export default async function AccountPage() {
             <p className="mt-1 text-lg font-semibold text-slate-900">{user.phone ?? "—"}</p>
           </div>
         </div>
+
+        <AccountProfileForm user={user} />
 
         <h2 id="siparislerim" className="mb-4 scroll-mt-28 text-xl font-semibold tracking-tight">
           Siparişlerim

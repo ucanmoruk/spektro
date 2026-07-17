@@ -1,6 +1,10 @@
 import type { Metadata, MetadataRoute } from "next";
 
-export const siteUrl = "https://spektrotek.com";
+function normalizeSiteUrl(url: string | undefined) {
+  return (url || "https://spektrotek.com").replace(/\/+$/, "");
+}
+
+export const siteUrl = normalizeSiteUrl(process.env.NEXT_PUBLIC_SITE_URL);
 
 export const organization = {
   name: "Spektrotek",
@@ -131,6 +135,13 @@ export const staticSeoPages = [
     priority: 0.72,
   },
   {
+    path: "kampanya",
+    title: "Kampanyalar | Laboratuvar Cihazları ve HPLC Fırsatları | Spektrotek",
+    description:
+      "Spektrotek kampanyaları: HPLC sistemleri, laboratuvar cihazları, kolonlar ve sarf malzemeleri için dönemsel B2B fırsatlar.",
+    priority: 0.66,
+  },
+  {
     path: "kampanya/knauer-azura-hplc",
     title: "KNAUER AZURA Analitik HPLC Kampanyası | Spektrotek",
     description:
@@ -154,8 +165,14 @@ export const noIndexRobots = {
 };
 
 export function absoluteUrl(path = "") {
+  if (/^https?:\/\//i.test(path)) return path;
   const normalized = path.startsWith("/") ? path : `/${path}`;
   return `${siteUrl}${normalized === "/" ? "" : normalized}`;
+}
+
+export function absoluteMediaUrl(path?: string | null) {
+  if (!path) return `${siteUrl}/brand/spektrotek-logo.png`;
+  return absoluteUrl(path);
 }
 
 export function canonicalFor(path = "") {
@@ -255,6 +272,21 @@ export function websiteJsonLd() {
       target: `${siteUrl}/market?q={search_term_string}`,
       "query-input": "required name=search_term_string",
     },
+  };
+}
+
+export function faqPageJsonLd(items: Array<{ question: string; answer: string }>) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: items.map((item) => ({
+      "@type": "Question",
+      name: item.question,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: item.answer,
+      },
+    })),
   };
 }
 

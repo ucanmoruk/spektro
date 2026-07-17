@@ -23,6 +23,19 @@ import { RichTextEditor } from "./RichTextEditor";
 
 type SpecRow = { label: string; value: string; slug: string };
 
+function featuredSlotLabel(slot: string) {
+  switch (slot) {
+    case "best-discount":
+      return "En iyi indirim";
+    case "weekly-product":
+      return "Haftanın ürünü";
+    case "new-arrival":
+      return "Yeni gelen";
+    default:
+      return slot;
+  }
+}
+
 type Draft = {
   id: number | null;
   name: string;
@@ -40,6 +53,7 @@ type Draft = {
   stock: string;
   isDirectSale: boolean;
   isActive: boolean;
+  featuredSlot: string;
   seoTitle: string;
   seoDescription: string;
   seoKeywords: string;
@@ -65,6 +79,7 @@ const emptyDraft: Draft = {
   stock: "0",
   isDirectSale: true,
   isActive: true,
+  featuredSlot: "",
   seoTitle: "",
   seoDescription: "",
   seoKeywords: "",
@@ -91,6 +106,7 @@ function toDraft(p: Product): Draft {
     stock: String(p.stock),
     isDirectSale: p.isDirectSale,
     isActive: p.isActive,
+    featuredSlot: p.featuredSlot ?? "",
     seoTitle: p.seoTitle ?? "",
     seoDescription: p.seoDescription ?? "",
     seoKeywords: p.seoKeywords ?? "",
@@ -237,6 +253,7 @@ export function ProductManager({
       stock: draft.stock,
       isDirectSale: draft.isDirectSale,
       isActive: draft.isActive,
+      featuredSlot: draft.featuredSlot || null,
       seoTitle: draft.seoTitle,
       seoDescription: draft.seoDescription,
       seoKeywords: draft.seoKeywords,
@@ -386,15 +403,22 @@ export function ProductManager({
                     </td>
                     <td className="px-4 py-3 text-slate-600">{p.stock}</td>
                     <td className="px-4 py-3">
-                      <span
-                        className={`inline-flex rounded-full px-2 py-1 text-xs font-medium ${
-                          p.isActive
-                            ? "bg-emerald-50 text-emerald-700"
-                            : "bg-slate-100 text-slate-500"
-                        }`}
-                      >
-                        {p.isActive ? "Aktif" : "Pasif"}
-                      </span>
+                      <div className="flex flex-wrap gap-1.5">
+                        <span
+                          className={`inline-flex rounded-full px-2 py-1 text-xs font-medium ${
+                            p.isActive
+                              ? "bg-emerald-50 text-emerald-700"
+                              : "bg-slate-100 text-slate-500"
+                          }`}
+                        >
+                          {p.isActive ? "Aktif" : "Pasif"}
+                        </span>
+                        {p.featuredSlot ? (
+                          <span className="inline-flex rounded-full bg-blue-50 px-2 py-1 text-xs font-medium text-spektro-blue">
+                            {featuredSlotLabel(p.featuredSlot)}
+                          </span>
+                        ) : null}
+                      </div>
                     </td>
                     <td className="px-4 py-3 text-right">
                       <Link
@@ -529,6 +553,21 @@ export function ProductManager({
               <option value="USD">USD ($)</option>
               <option value="TRY">TRY (₺)</option>
             </select>
+          </Field>
+          <Field label="Öne Çıkan Alan">
+            <select
+              value={draft.featuredSlot}
+              onChange={(e) => upd("featuredSlot", e.target.value)}
+              className={input}
+            >
+              <option value="">— Öne çıkarma —</option>
+              <option value="best-discount">En iyi indirim</option>
+              <option value="weekly-product">Haftanın ürünü</option>
+              <option value="new-arrival">Yeni gelen</option>
+            </select>
+            <p className="mt-1 text-xs text-slate-400">
+              Market üstündeki öne çıkan ürün kartlarında gösterilir.
+            </p>
           </Field>
         </div>
 

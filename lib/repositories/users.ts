@@ -8,9 +8,13 @@ type UserRow = {
   password_hash: string;
   full_name: string;
   phone: string | null;
+  invoice_type: "individual" | "corporate";
   company: string | null;
   tax_office: string | null;
   tax_number: string | null;
+  address: string | null;
+  city: string | null;
+  district: string | null;
   role: "customer" | "admin";
   created_at: string;
 };
@@ -21,9 +25,13 @@ function mapUser(row: UserRow): User {
     email: row.email,
     fullName: row.full_name,
     phone: row.phone,
+    invoiceType: row.invoice_type ?? "individual",
     company: row.company,
     taxOffice: row.tax_office,
     taxNumber: row.tax_number,
+    address: row.address,
+    city: row.city,
+    district: row.district,
     role: row.role,
     createdAt: row.created_at,
   };
@@ -86,10 +94,34 @@ export async function updateUserPassword(id: number, passwordHash: string): Prom
 
 export async function updateUserProfile(
   id: number,
-  input: { fullName: string; phone?: string | null; company?: string | null },
+  input: {
+    fullName: string;
+    phone?: string | null;
+    invoiceType?: "individual" | "corporate";
+    company?: string | null;
+    taxOffice?: string | null;
+    taxNumber?: string | null;
+    address?: string | null;
+    city?: string | null;
+    district?: string | null;
+  },
 ): Promise<void> {
   await execute(
-    `UPDATE users SET full_name = ?, phone = ?, company = ? WHERE id = ?`,
-    [input.fullName, input.phone ?? null, input.company ?? null, id],
+    `UPDATE users
+     SET full_name = ?, phone = ?, invoice_type = ?, company = ?, tax_office = ?,
+         tax_number = ?, address = ?, city = ?, district = ?
+     WHERE id = ?`,
+    [
+      input.fullName,
+      input.phone ?? null,
+      input.invoiceType ?? "individual",
+      input.company ?? null,
+      input.taxOffice ?? null,
+      input.taxNumber ?? null,
+      input.address ?? null,
+      input.city ?? null,
+      input.district ?? null,
+      id,
+    ],
   );
 }

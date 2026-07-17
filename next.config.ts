@@ -1,6 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  output: "standalone",
+  outputFileTracingRoot: process.cwd(),
   // Next.js 15.5.x (webpack) sunucu tarafında async chunk'ları `require("./<id>.js")`
   // ile çözerken "page data" toplama aşamasında modül bulunamadığı için build kırılıyor.
   // Sunucu bundle'larında chunk bölmeyi kapatarak modülleri kendi kendine yeterli yapıyoruz.
@@ -13,6 +15,7 @@ const nextConfig: NextConfig = {
     return config;
   },
   images: {
+    unoptimized: true,
     remotePatterns: [
       {
         protocol: "https",

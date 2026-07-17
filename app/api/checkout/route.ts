@@ -26,6 +26,13 @@ export async function POST(request: Request) {
         { status: 400 },
       );
     }
+    const invoiceType = customer.invoiceType === "corporate" ? "corporate" : "individual";
+    if (invoiceType === "corporate" && !customer.company) {
+      return NextResponse.json(
+        { ok: false, error: "Kurumsal fatura için firma/unvan bilgisi zorunludur." },
+        { status: 400 },
+      );
+    }
 
     const user = await getCurrentUser();
 
@@ -90,7 +97,10 @@ export async function POST(request: Request) {
       customerName: String(customer.name),
       customerEmail: String(customer.email),
       customerPhone: customer.phone ? String(customer.phone) : null,
+      invoiceType,
       company: customer.company ? String(customer.company) : null,
+      taxOffice: customer.taxOffice ? String(customer.taxOffice) : null,
+      taxNumber: customer.taxNumber ? String(customer.taxNumber) : null,
       shippingAddress: customer.address ? String(customer.address) : null,
       shippingCity: customer.city ? String(customer.city) : null,
       notes: notes || null,
